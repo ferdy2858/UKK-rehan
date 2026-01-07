@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Ticket extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'hiking_schedule_id',
+        'total_people',
+        'status',
+    ];
+
+    public const STATUS_PENDING  = 'pending';
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_REJECTED = 'rejected';
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function schedule()
+    {
+        return $this->belongsTo(HikingSchedule::class, 'hiking_schedule_id');
+    }
+
+    public function members()
+    {
+        return $this->hasMany(TicketMember::class);
+    }
+}
