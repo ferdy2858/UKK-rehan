@@ -14,6 +14,8 @@ class Ticket extends Model
         'hiking_schedule_id',
         'total_people',
         'status',
+        'price',
+        'total_price',
     ];
 
     public const STATUS_PENDING  = 'pending';

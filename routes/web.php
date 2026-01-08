@@ -1,7 +1,11 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\MountainController;
+use App\Http\Controllers\Admin\HikingScheduleController;
+use App\Http\Controllers\Admin\TicketController as AdminTicketController;
+use App\Http\Controllers\User\TicketController as UserTicketController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,7 +21,7 @@ Route::get('/', function () {
 | AUTH ROUTES (Breeze)
 |--------------------------------------------------------------------------
 */
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -28,7 +32,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | ADMIN
+    | ADMIN ROUTES
     |--------------------------------------------------------------------------
     */
     Route::middleware('role:admin')
@@ -39,11 +43,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/dashboard', function () {
                 return view('admin.dashboard');
             })->name('dashboard');
+
+            // Master Data
+            Route::resource('mountains', MountainController::class);
+            Route::resource('hiking-schedules', HikingScheduleController::class);
+
+            // Ticket Validation
+            Route::get('/tickets', [AdminTicketController::class, 'index'])
+                ->name('tickets.index');
+
+            Route::get('/tickets/{ticket}', [AdminTicketController::class, 'show'])
+                ->name('tickets.show');
+
+            Route::patch('/tickets/{ticket}/approve', [AdminTicketController::class, 'approve'])
+                ->name('tickets.approve');
+
+            Route::patch('/tickets/{ticket}/reject', [AdminTicketController::class, 'reject'])
+                ->name('tickets.reject');
         });
 
     /*
     |--------------------------------------------------------------------------
-    | USER
+    | USER ROUTES
     |--------------------------------------------------------------------------
     */
     Route::middleware('role:user')
@@ -54,11 +75,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/dashboard', function () {
                 return view('users.dashboard');
             })->name('dashboard');
+
+            // Ticket Booking
+            Route::get('/tickets', [UserTicketController::class, 'index'])
+                ->name('tickets.index');
+
+            Route::get('/tickets/create', [UserTicketController::class, 'create'])
+                ->name('tickets.create');
+
+            Route::post('/tickets', [UserTicketController::class, 'store'])
+                ->name('tickets.store');
+
+            Route::get('/tickets/{ticket}', [UserTicketController::class, 'show'])
+                ->name('tickets.show');
         });
 
     /*
     |--------------------------------------------------------------------------
-    | PROFILE (shared)
+    | PROFILE (SHARED)
     |--------------------------------------------------------------------------
     */
     Route::get('/profile', [ProfileController::class, 'edit'])

@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Ticket;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class HikingSchedule extends Model
 {
@@ -13,6 +14,8 @@ class HikingSchedule extends Model
         'mountain_id',
         'date',
         'quota',
+        'status',
+        'price',
     ];
 
     protected $casts = [
@@ -27,5 +30,27 @@ class HikingSchedule extends Model
     public function tickets()
     {
         return $this->hasMany(Ticket::class);
+    }
+
+    /* =========================
+       HELPER (OPSIONAL TAPI BERGUNA)
+    ========================== */
+
+    public function usedQuota()
+    {
+        return $this->tickets()
+            ->where('status', Ticket::STATUS_APPROVED)
+            ->sum('total_people');
+    }
+
+    public function getRemainingQuotaAttribute()
+    {
+        return $this->quota - $this->usedQuota();
+    }
+
+    public function isOpenFor(int $people): bool
+    {
+        return $this->status === 'open'
+            && $this->remaining_quota >= $people;
     }
 }

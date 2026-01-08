@@ -13,9 +13,7 @@
     @php
         $isAdmin = auth()->user()->role === 'admin';
 
-        $dashboardRoute = $isAdmin
-            ? 'admin.dashboard'
-            : 'user.dashboard';
+        $dashboardRoute = $isAdmin ? 'admin.dashboard' : 'user.dashboard';
     @endphp
 
     <!-- Menu -->
@@ -23,49 +21,51 @@
 
         <!-- Dashboard -->
         <a href="{{ route($dashboardRoute) }}"
-           class="block px-4 py-2 rounded-md transition
+            class="block px-4 py-2 rounded-md transition
            {{ request()->routeIs($dashboardRoute) ? 'bg-green-700 text-white' : 'hover:bg-green-100' }}">
             🧭 Dashboard
         </a>
 
         <!-- USER MENU -->
-        @unless($isAdmin)
-            <a href="#"
-               class="block px-4 py-2 rounded-md hover:bg-green-100 transition">
+        @unless ($isAdmin)
+            <a href="{{ route('user.tickets.index') }}" class="block px-4 py-2 rounded-md hover:bg-green-100 transition">
                 🥾 Pesan Tiket
             </a>
 
-            <a href="#"
-               class="block px-4 py-2 rounded-md hover:bg-green-100 transition">
+            <a href="#" class="block px-4 py-2 rounded-md hover:bg-green-100 transition">
                 🎟️ Tiket Saya
             </a>
         @endunless
 
         <!-- ADMIN MENU -->
-        @if($isAdmin)
+        @if ($isAdmin)
             <div class="mt-4 px-4 text-xs font-semibold text-green-700 uppercase">
                 Admin
             </div>
 
-            <a href="#"
-               class="block px-4 py-2 rounded-md hover:bg-green-100 transition">
+            <a href="{{ route('admin.mountains.index') }}"
+                class="block px-4 py-2 rounded-md transition
+                {{ request()->routeIs('admin.mountains.*') ? 'bg-green-700 text-white' : 'hover:bg-green-100' }}">
                 🏔️ Gunung
             </a>
 
-            <a href="#"
-               class="block px-4 py-2 rounded-md hover:bg-green-100 transition">
+
+            <a href="{{ route('admin.hiking-schedules.index') }}"
+                class="block px-4 py-2 rounded-md transition
+                {{ request()->routeIs('admin.hiking-schedules.*') ? 'bg-green-700 text-white' : 'hover:bg-green-100' }}">
                 📅 Jadwal Pendakian
             </a>
 
-            <a href="#"
-               class="block px-4 py-2 rounded-md hover:bg-green-100 transition">
+
+            <a href="{{ route('admin.tickets.index')}}" class="block px-4 py-2 rounded-md transition
+            {{ request()->routeIs('admin.tickets.*') ? 'bg-green-700 text-white' : 'hover:bg-green-100' }}">
                 ✅ Validasi Tiket
             </a>
         @endif
 
         <!-- SHARED -->
         <a href="{{ route('profile.edit') }}"
-           class="block px-4 py-2 rounded-md transition
+            class="block px-4 py-2 rounded-md transition
            {{ request()->routeIs('profile.*') ? 'bg-green-700 text-white' : 'hover:bg-green-100' }}">
             👤 Profile
         </a>
