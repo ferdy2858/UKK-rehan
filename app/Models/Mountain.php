@@ -14,6 +14,7 @@ class Mountain extends Model
         'location',
         'height',
         'quota_per_day',
+        'image',
     ];
 
     public function schedules()

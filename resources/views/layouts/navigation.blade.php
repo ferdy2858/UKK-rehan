@@ -28,11 +28,15 @@
 
         <!-- USER MENU -->
         @unless ($isAdmin)
-            <a href="{{ route('user.tickets.index') }}" class="block px-4 py-2 rounded-md hover:bg-green-100 transition">
+            <a href="{{ route('user.tickets.create') }}"
+                class="block px-4 py-2 rounded-md   transition
+            {{ request()->routeIs('user.tickets.create') ? 'bg-green-700 text-white' : 'hover:bg-green-100' }}">
                 🥾 Pesan Tiket
             </a>
 
-            <a href="#" class="block px-4 py-2 rounded-md hover:bg-green-100 transition">
+            <a href="{{ route('user.tickets.index') }}"
+                class="block px-4 py-2 rounded-md transition
+            {{ request()->routeIs('user.tickets.index') ? 'bg-green-700 text-white' : 'hover:bg-green-100' }}">
                 🎟️ Tiket Saya
             </a>
         @endunless
@@ -57,9 +61,15 @@
             </a>
 
 
-            <a href="{{ route('admin.tickets.index')}}" class="block px-4 py-2 rounded-md transition
+            <a href="{{ route('admin.tickets.index') }}"
+                class="block px-4 py-2 rounded-md transition
             {{ request()->routeIs('admin.tickets.*') ? 'bg-green-700 text-white' : 'hover:bg-green-100' }}">
                 ✅ Validasi Tiket
+            </a>
+
+            <a href="{{ route('admin.verification.index') }}" class="block px-4 py-2 rounded-md transition
+            {{ request()->routeIs('admin.verification.*') ? 'bg-green-700 text-white' : 'hover:bg-green-100' }}">
+                🎟️ Verifikasi Tiket
             </a>
         @endif
 

@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-green-800">
-            🎟️ Manajemen Tiket
+            🎟️ Manajemen Tiket Pendakian
         </h2>
     </x-slot>
 
@@ -12,7 +12,7 @@
                     <tr>
                         <th class="p-3 text-left">User</th>
                         <th class="p-3 text-left">Gunung</th>
-                        <th class="p-3">Tanggal</th>
+                        <th class="p-3">Tanggal Mendaki</th>
                         <th class="p-3">Jumlah</th>
                         <th class="p-3">Status</th>
                         <th class="p-3">Aksi</th>
@@ -21,6 +21,8 @@
                 <tbody>
                     @forelse ($tickets as $ticket)
                         <tr class="border-b">
+
+                            <!-- USER -->
                             <td class="p-3">
                                 {{ $ticket->user->name }}
                                 <div class="text-xs text-gray-500">
@@ -28,33 +30,45 @@
                                 </div>
                             </td>
 
+                            <!-- GUNUNG -->
                             <td class="p-3">
                                 {{ $ticket->schedule->mountain->name }}
                             </td>
 
+                            <!-- TANGGAL MENDAKI (HARI-H) -->
                             <td class="p-3 text-center">
-                                {{ $ticket->schedule->date->format('d M Y') }}
+                                {{ \Carbon\Carbon::parse($ticket->hike_date)->format('d M Y') }}
                             </td>
 
+                            <!-- JUMLAH -->
                             <td class="p-3 text-center">
                                 {{ $ticket->total_people }}
                             </td>
 
+                            <!-- STATUS -->
                             <td class="p-3 text-center">
                                 <span class="px-2 py-1 rounded text-xs
                                     @if($ticket->status === 'approved') bg-green-100 text-green-700
                                     @elseif($ticket->status === 'rejected') bg-red-100 text-red-700
+                                    @elseif($ticket->status === 'used') bg-gray-200 text-gray-700
                                     @else bg-yellow-100 text-yellow-700
                                     @endif">
                                     {{ ucfirst($ticket->status) }}
                                 </span>
                             </td>
 
-                            <td class="p-3 text-center">
+                            <!-- AKSI -->
+                            <td class="p-3 text-center space-x-2">
                                 <a href="{{ route('admin.tickets.show', $ticket) }}"
                                    class="text-green-700 hover:underline">
                                     Detail
                                 </a>
+
+                                @if ($ticket->status === 'approved' && $ticket->hike_date === now()->toDateString())
+                                    <span class="text-xs text-green-600 font-semibold">
+                                        Siap diverifikasi
+                                    </span>
+                                @endif
                             </td>
                         </tr>
                     @empty

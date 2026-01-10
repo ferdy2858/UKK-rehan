@@ -12,7 +12,7 @@ class HikingScheduleController extends Controller
     public function index()
     {
         $schedules = HikingSchedule::with('mountain')
-            ->orderBy('date')
+            ->orderBy('start_date')
             ->get();
 
         return view('admin.hiking-schedules.index', compact('schedules'));
@@ -29,7 +29,8 @@ class HikingScheduleController extends Controller
     {
         $data = $request->validate([
             'mountain_id' => 'required|exists:mountains,id',
-            'date'        => 'required|date',
+            'start_date'  => 'required|date',
+            'end_date'    => 'required|date|after_or_equal:start_date',
             'quota'       => 'required|integer|min:1',
             'price'       => 'required|integer|min:1',
             'status'      => 'required|in:open,closed',
@@ -56,7 +57,8 @@ class HikingScheduleController extends Controller
     {
         $data = $request->validate([
             'mountain_id' => 'required|exists:mountains,id',
-            'date'        => 'required|date',
+            'start_date'  => 'required|date',
+            'end_date'    => 'required|date|after_or_equal:start_date',
             'quota'       => 'required|integer|min:1',
             'price'       => 'required|integer|min:1',
             'status'      => 'required|in:open,closed',

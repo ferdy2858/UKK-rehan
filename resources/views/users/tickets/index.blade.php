@@ -18,30 +18,59 @@
                 <thead class="bg-green-700 text-white">
                     <tr>
                         <th class="p-3 text-left">Gunung</th>
-                        <th class="p-3">Tanggal</th>
-                        <th class="p-3">Jumlah</th>
-                        <th class="p-3">Status</th>
-                        <th class="p-3">Aksi</th>
+                        <th class="p-3 text-center">Tanggal Mendaki</th>
+                        <th class="p-3 text-center">Jumlah</th>
+                        <th class="p-3 text-center">Status</th>
+                        <th class="p-3 text-center">Aksi</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @forelse ($tickets as $ticket)
-                        <tr class="border-b">
-                            <td class="p-3">{{ $ticket->schedule->mountain->name }}</td>
-                            <td class="p-3 text-center">{{ $ticket->schedule->date->format('d M Y') }}</td>
-                            <td class="p-3 text-center">{{ $ticket->total_people }}</td>
+                        <tr class="border-b hover:bg-gray-50">
+                            <!-- GUNUNG -->
+                            <td class="p-3">
+                                <div class="font-medium">
+                                    {{ $ticket->schedule->mountain->name }}
+                                </div>
+                                <div class="text-xs text-gray-500">
+                                    Jadwal:
+                                    {{ \Carbon\Carbon::parse($ticket->schedule->start_date)->format('d M') }}
+                                    -
+                                    {{ \Carbon\Carbon::parse($ticket->schedule->end_date)->format('d M Y') }}
+                                </div>
+                            </td>
+
+                            <!-- TANGGAL MENDAKI -->
                             <td class="p-3 text-center">
-                                <span class="px-2 py-1 rounded text-xs
-                                    @if($ticket->status === 'approved') bg-green-100 text-green-700
-                                    @elseif($ticket->status === 'rejected') bg-red-100 text-red-700
-                                    @else bg-yellow-100 text-yellow-700
+                                {{ \Carbon\Carbon::parse($ticket->hike_date)->format('d M Y') }}
+                            </td>
+
+                            <!-- JUMLAH -->
+                            <td class="p-3 text-center">
+                                {{ $ticket->total_people }} orang
+                            </td>
+
+                            <!-- STATUS -->
+                            <td class="p-3 text-center">
+                                <span class="px-2 py-1 rounded text-xs font-medium
+                                    @if($ticket->status === 'approved')
+                                        bg-green-100 text-green-700
+                                    @elseif($ticket->status === 'rejected')
+                                        bg-red-100 text-red-700
+                                    @elseif($ticket->status === 'used')
+                                        bg-blue-100 text-blue-700
+                                    @else
+                                        bg-yellow-100 text-yellow-700
                                     @endif">
                                     {{ ucfirst($ticket->status) }}
                                 </span>
                             </td>
+
+                            <!-- AKSI -->
                             <td class="p-3 text-center">
                                 <a href="{{ route('user.tickets.show', $ticket) }}"
-                                   class="text-green-700 hover:underline">
+                                   class="text-green-700 hover:underline font-medium">
                                     Detail
                                 </a>
                             </td>
@@ -49,7 +78,7 @@
                     @empty
                         <tr>
                             <td colspan="5" class="p-6 text-center text-gray-500">
-                                Belum ada tiket.
+                                Belum ada tiket pendakian.
                             </td>
                         </tr>
                     @endforelse

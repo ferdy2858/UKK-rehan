@@ -8,6 +8,8 @@ use App\Models\TicketMember;
 use App\Models\HikingSchedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class TicketController extends Controller
 {
@@ -30,16 +32,15 @@ class TicketController extends Controller
     public function create()
     {
         $schedules = HikingSchedule::with(['mountain', 'tickets'])
-            ->whereDate('date', '>=', now())
+            ->whereDate('end_date', '>=', now())
+            ->where('status', 'open')
             ->get()
             ->map(function ($schedule) {
 
-                // total orang dari tiket APPROVED
                 $approvedPeople = $schedule->tickets
                     ->where('status', Ticket::STATUS_APPROVED)
                     ->sum('total_people');
 
-                // sisa kuota real
                 $schedule->remaining_quota = max(
                     $schedule->quota - $approvedPeople,
                     0
@@ -54,12 +55,13 @@ class TicketController extends Controller
 
 
     /**
-     * SIMPAN TIKET (INTI)
+     * SIMPAN TIKET
      */
     public function store(Request $request)
     {
         $request->validate([
             'hiking_schedule_id' => ['required', 'exists:hiking_schedules,id'],
+            'hike_date'          => ['required', 'date', 'after_or_equal:today'],
             'total_people'       => ['required', 'integer', 'min:1'],
             'members'            => ['required', 'array'],
             'members.*.name'     => ['required', 'string'],
@@ -69,9 +71,9 @@ class TicketController extends Controller
 
         DB::transaction(function () use ($request) {
 
-            $schedule = HikingSchedule::lockForUpdate()->findOrFail(
-                $request->hiking_schedule_id
-            );
+            $schedule = HikingSchedule::lockForUpdate()
+                ->with('tickets')
+                ->findOrFail($request->hiking_schedule_id);
 
             // hitung sisa kuota real
             $approved = $schedule->tickets()
@@ -88,12 +90,13 @@ class TicketController extends Controller
             $ticket = Ticket::create([
                 'user_id'            => auth()->id(),
                 'hiking_schedule_id' => $schedule->id,
+                'hike_date'          => Carbon::parse($request->hike_date),
                 'total_people'       => $request->total_people,
-                'price'              => $schedule->price, // SNAPSHOT
+                'price'              => $schedule->price,
                 'total_price'        => $schedule->price * $request->total_people,
                 'status'             => Ticket::STATUS_PENDING,
+                'verification_code'  => strtoupper(Str::random(8)),
             ]);
-
 
             // simpan anggota
             foreach ($request->members as $member) {

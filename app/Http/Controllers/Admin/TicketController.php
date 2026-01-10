@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\Ticket;
-use App\Models\HikingSchedule;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\HikingSchedule;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 
 class TicketController extends Controller
 {
@@ -16,9 +17,9 @@ class TicketController extends Controller
     public function index()
     {
         $tickets = Ticket::with([
-                'user',
-                'schedule.mountain'
-            ])
+            'user',
+            'schedule.mountain'
+        ])
             ->latest()
             ->get();
 
@@ -65,7 +66,8 @@ class TicketController extends Controller
             }
 
             $ticket->update([
-                'status' => Ticket::STATUS_APPROVED
+                'status' => Ticket::STATUS_APPROVED,
+                'verification_code' => 'MTN-' . strtoupper(Str::random(8)),
             ]);
         });
 

@@ -3,15 +3,17 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\MountainController;
+use App\Http\Controllers\Admin\VerificationController;
 use App\Http\Controllers\Admin\HikingScheduleController;
-use App\Http\Controllers\Admin\TicketController as AdminTicketController;
 use App\Http\Controllers\User\TicketController as UserTicketController;
+use App\Http\Controllers\Admin\TicketController as AdminTicketController;
 
 /*
 |--------------------------------------------------------------------------
 | PUBLIC
 |--------------------------------------------------------------------------
 */
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -60,6 +62,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             Route::patch('/tickets/{ticket}/reject', [AdminTicketController::class, 'reject'])
                 ->name('tickets.reject');
+            Route::get('/verification', [VerificationController::class, 'index'])
+                ->name('verification.index');
+
+            Route::post('/verification/check', [VerificationController::class, 'check'])
+                ->name('verification.check');
         });
 
     /*

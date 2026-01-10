@@ -12,14 +12,16 @@ class HikingSchedule extends Model
 
     protected $fillable = [
         'mountain_id',
-        'date',
+        'start_date',
+        'end_date',
         'quota',
         'status',
         'price',
     ];
 
     protected $casts = [
-        'date' => 'date',
+        'start_date' => 'date',
+        'end_date'   => 'date',
     ];
 
     public function mountain()
