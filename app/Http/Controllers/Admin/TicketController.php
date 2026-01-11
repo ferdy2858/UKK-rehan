@@ -89,4 +89,17 @@ class TicketController extends Controller
 
         return back()->with('success', 'Tiket berhasil ditolak.');
     }
+    public function markReturned(Ticket $ticket)
+    {
+        if ($ticket->status !== 'used') {
+            return back()->with('error', 'Tiket belum masuk atau sudah selesai');
+        }
+
+        $ticket->update([
+            'status' => 'completed',
+            'returned_at' => now(),
+        ]);
+
+        return back()->with('success', '✅ Pendaki tercatat sudah turun');
+    }
 }

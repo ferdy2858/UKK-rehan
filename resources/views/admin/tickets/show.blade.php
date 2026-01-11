@@ -21,9 +21,21 @@
             </p>
 
             <p>
-                <strong>Tanggal Mendaki:</strong>
+                <strong>Tanggal Naik:</strong>
                 {{ \Carbon\Carbon::parse($ticket->hike_date)->format('d M Y') }}
             </p>
+
+            <p>
+                <strong>Tanggal Turun:</strong>
+                @if ($ticket->returned_at)
+                    {{ \Carbon\Carbon::parse($ticket->returned_at)->format('d M Y') }}
+                @else
+                    <span class="text-gray-500 italic">
+                        Belum turun
+                    </span>
+                @endif
+            </p>
+
 
             <p>
                 <strong>Jumlah Pendaki:</strong>
@@ -37,12 +49,12 @@
 
             <p>
                 <strong>Status:</strong>
-                <span class="px-2 py-1 rounded text-xs
-                    @if($ticket->status === 'approved') bg-green-100 text-green-700
+                <span
+                    class="px-2 py-1 rounded text-xs
+                    @if ($ticket->status === 'approved') bg-green-100 text-green-700
                     @elseif($ticket->status === 'rejected') bg-red-100 text-red-700
                     @elseif($ticket->status === 'used') bg-gray-200 text-gray-700
-                    @else bg-yellow-100 text-yellow-700
-                    @endif">
+                    @else bg-yellow-100 text-yellow-700 @endif">
                     {{ ucfirst($ticket->status) }}
                 </span>
             </p>
@@ -94,8 +106,7 @@
                 <form method="POST" action="{{ route('admin.tickets.approve', $ticket) }}">
                     @csrf
                     @method('PATCH')
-                    <button
-                        class="bg-green-700 text-white px-6 py-2 rounded hover:bg-green-800">
+                    <button class="bg-green-700 text-white px-6 py-2 rounded hover:bg-green-800">
                         ✅ Approve
                     </button>
                 </form>
@@ -103,12 +114,24 @@
                 <form method="POST" action="{{ route('admin.tickets.reject', $ticket) }}">
                     @csrf
                     @method('PATCH')
-                    <button
-                        class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">
+                    <button class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">
                         ❌ Reject
                     </button>
                 </form>
             </div>
+        @endif
+
+        {{-- TOMBOL KONFIRMASI TURUN --}}
+        @if ($ticket->status === 'used')
+            <form method="POST" action="{{ route('admin.tickets.markReturned', $ticket) }}" class="mt-4">
+                @csrf
+                @method('PATCH')
+
+                <button onclick="return confirm('Yakin pendaki sudah turun semua?')"
+                    class="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800">
+                    ⬇️ Konfirmasi Pendaki Turun
+                </button>
+            </form>
         @endif
 
         {{-- INFO HARI-H --}}

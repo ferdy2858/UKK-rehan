@@ -33,7 +33,7 @@ class VerificationController extends Controller
         }
 
         // hanya boleh diverifikasi di hari H
-        if ($ticket->hike_date !== now()->toDateString()) {
+        if (! $ticket->hike_date->isToday()) {
             return back()->with(
                 'error',
                 '❌ Verifikasi hanya bisa dilakukan di hari pendakian'

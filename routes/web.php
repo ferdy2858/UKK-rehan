@@ -60,13 +60,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::patch('/tickets/{ticket}/approve', [AdminTicketController::class, 'approve'])
                 ->name('tickets.approve');
 
+            Route::patch('/tickets/{ticket}/markReturned', [AdminTicketController::class, 'markReturned'])
+                ->name('tickets.markReturned');
+
             Route::patch('/tickets/{ticket}/reject', [AdminTicketController::class, 'reject'])
                 ->name('tickets.reject');
+                
             Route::get('/verification', [VerificationController::class, 'index'])
                 ->name('verification.index');
 
             Route::post('/verification/check', [VerificationController::class, 'check'])
                 ->name('verification.check');
+            
         });
 
     /*

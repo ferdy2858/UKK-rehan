@@ -27,6 +27,17 @@
                 </p>
 
                 <p>
+                    <span class="font-medium">Tanggal Turun:</span>
+                    @if ($ticket->returned_at)
+                        {{ \Carbon\Carbon::parse($ticket->returned_at)->format('d M Y') }}
+                    @else
+                        <span class="italic text-gray-500">
+                            Belum tercatat
+                        </span>
+                    @endif
+                </p>
+
+                <p>
                     <span class="font-medium">Jumlah Pendaki:</span>
                     {{ $ticket->total_people }} orang
                 </p>
@@ -44,16 +55,17 @@
 
             <!-- STATUS -->
             <div class="mt-3">
-                <span class="inline-block px-3 py-1 rounded text-sm font-medium
-                    @if($ticket->status === 'approved')
-                        bg-green-100 text-green-700
-                    @elseif($ticket->status === 'used')
+                <span
+                    class="inline-block px-3 py-1 rounded text-sm font-medium
+                    @if ($ticket->status === 'approved') bg-green-100 text-green-700
+                    @elseif($ticket->status === 'used' && !$ticket->returned_at)
                         bg-blue-100 text-blue-700
+                    @elseif($ticket->returned_at)
+                        bg-green-200 text-green-800
                     @elseif($ticket->status === 'rejected')
                         bg-red-100 text-red-700
                     @else
-                        bg-yellow-100 text-yellow-700
-                    @endif">
+                        bg-yellow-100 text-yellow-700 @endif">
                     Status: {{ ucfirst($ticket->status) }}
                 </span>
             </div>
@@ -71,13 +83,34 @@
                         Tunjukkan kode ini saat check-in di basecamp
                     </p>
                 </div>
-            @elseif ($ticket->status === 'used')
+            @endif
+
+            <!-- SUDAH DIGUNAKAN -->
+            @if ($ticket->status === 'used' && !$ticket->returned_at)
                 <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded">
                     <p class="font-semibold text-blue-800">
-                        ✅ Tiket sudah digunakan
+                        ⛰️ Pendakian sedang berlangsung
+                    </p>
+                    <p class="text-sm text-blue-700">
+                        Silakan lakukan konfirmasi turun setelah selesai
                     </p>
                 </div>
-            @else
+            @endif
+
+            <!-- SUDAH TURUN -->
+            @if ($ticket->returned_at)
+                <div class="mt-4 p-4 bg-green-50 border border-green-200 rounded">
+                    <p class="font-semibold text-green-800">
+                        ✅ Pendaki telah tercatat turun dengan aman
+                    </p>
+                    <p class="text-sm text-green-700">
+                        Terima kasih telah menjaga keselamatan
+                    </p>
+                </div>
+            @endif
+
+            <!-- MENUNGGU -->
+            @if ($ticket->status === 'pending')
                 <p class="mt-4 text-sm text-yellow-600">
                     ⏳ Menunggu verifikasi admin
                 </p>
@@ -104,8 +137,7 @@
         </div>
 
         <div>
-            <a href="{{ route('user.tickets.index') }}"
-               class="text-sm text-gray-600 hover:underline">
+            <a href="{{ route('user.tickets.index') }}" class="text-sm text-gray-600 hover:underline">
                 ← Kembali ke tiket saya
             </a>
         </div>
