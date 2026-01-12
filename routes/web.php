@@ -3,11 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\MountainController;
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\Admin\VerificationController;
 use App\Http\Controllers\Admin\HikingScheduleController;
 use App\Http\Controllers\User\TicketController as UserTicketController;
 use App\Http\Controllers\Admin\TicketController as AdminTicketController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,7 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('admin.')
         ->group(function () {
 
-            Route::get('/dashboard',[DashboardController::class, 'index'])->name('dashboard');
+            Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
             // Master Data
             Route::resource('mountains', MountainController::class);
@@ -64,13 +65,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             Route::patch('/tickets/{ticket}/reject', [AdminTicketController::class, 'reject'])
                 ->name('tickets.reject');
-                
+
             Route::get('/verification', [VerificationController::class, 'index'])
                 ->name('verification.index');
 
             Route::post('/verification/check', [VerificationController::class, 'check'])
                 ->name('verification.check');
-            
         });
 
     /*
@@ -83,9 +83,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('user.')
         ->group(function () {
 
-            Route::get('/dashboard', function () {
-                return view('users.dashboard');
-            })->name('dashboard');
+            Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
 
             // Ticket Booking
             Route::get('/tickets', [UserTicketController::class, 'index'])
